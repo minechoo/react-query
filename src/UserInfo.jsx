@@ -1,12 +1,12 @@
-import { useUserQuery } from './hooks/useUsers';
+import UserAddress from './UserAddress';
+import UserName from './UserName';
 
 function UserInfo() {
-	const { data, isSuccess } = useUserQuery();
-
 	return (
 		<div>
 			<h1>UserInfo</h1>
-			{isSuccess && <h2>Name: {data.name}</h2>}
+			<UserName />
+			<UserAddress />
 		</div>
 	);
 }
