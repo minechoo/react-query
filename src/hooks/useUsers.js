@@ -6,8 +6,8 @@ const fectchUser = async ({ queryKey }) => {
 	return await response.json();
 };
 
-export const useUserQuery = () =>
-	useQuery(['user', 2], fectchUser, {
+export const useUserQuery = (opt) =>
+	useQuery(['user', opt], fectchUser, {
 		refetchOnWindowFocus: false,
 		refetchOnMount: false,
 		staleTime: 1000 * 5, //디폴트 : 0초
