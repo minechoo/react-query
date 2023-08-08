@@ -10,7 +10,7 @@ function UserForm() {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		userMutation.mutate(UserName);
+		userMutation.mutate([UserName, 1]);
 	};
 
 	return (
