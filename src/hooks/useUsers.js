@@ -32,13 +32,19 @@ export const useUserQuery = (opt) =>
 	});
 
 //데이터 변경요청후 가져오는 커스텀 훅
+//해당 함수는 useUserMutaion커스텀 훅에서 사용되는 서버데이터를 변경하는 비동기 호출 함수로 배열값을 비구조할당해서 내부로 전달
 export const updateUserName = async ([userName, num]) => {
+	//파라미터로 받은 두번째 값을 요청URL의 쿼리형태로 담아줌
 	const response = await fetch(`https://jsonplaceholder.typicode.com/users/${num}`, {
-		method: 'PUT',
+		//fetch매서드의 두번째 옵션값을로 객체리터럴을 지정함으로써 데이터를 가져오는 것 뿐만이 아닌 Rest방식 데이터 요청 가능
+		//Get(쿼리) Delete(쿼리) put(body객체에 담아서 전달) post(body 객체에 담아서 전달)
+		method: 'PATCH',
+		//서버쪽으로 전달할 데이터를 문자화해서 보냄, 서버쪽에서는 해당데이터를 다시 body-parser 로 파싱한 뒤 동일한 name에 해당하는 다큐먼트 찾은 뒤 같이 전달된 userName값으로 해당 다큐먼트의 서버데이터 변경
 		body: JSON.stringify({
 			id: 1,
 			name: userName,
 		}),
+		//데이터 요청시 header객체에도 같이 전달
 		headers: {
 			'Content-type': 'application/json; charset=UTF-8',
 		},
@@ -48,12 +54,18 @@ export const updateUserName = async ([userName, num]) => {
 	return result;
 };
 //기존 서버데이터를 변경요청하는 커스텀 훅
+//위의 비동기 데이터 변경 함수를 활용해서 서버데이터를 변경한뒤 캐싱처리해주는 커스텀 훅 생성
 export const useUserMutaion = () => {
+	//기존 생성한 QueryClient인스턴스를 호출하는 함수
+	//해당 QueryClient인스턴스에서 prototype에 등록되어 있는 setQueryData라는 서버데이터 변경요청함수를 호출하기 위함
 	const queryClient = useQueryClient();
 	//useQueryClient로부터 객체값을 반환뒤
+	//useMutation(비동기함수, 옵션설정 객체{onSuccess: mutate요청이 성공적으로 들어가면 연결된 핸들러함수 호출})
 	return useMutation(updateUserName, {
 		//mutation요청이 성공적으로 들어가면 파라미터값을 기존 쿼리키에 추가해서 데이터변경처리하는 setQueryData함수 호출
+		//mutate요청이 성공시 연결된 핸들러 함수 호출 (args) 실제 해당훅을 호출시 생성되는 객체의 mutate라는 property에 해당 핸들러 함수가 등록됨 (args: 변경할 데이터를 전달)
 		onSuccess: (args) => {
+			//위에서 가져온 인스턴스 객체의 setQueryData함수호출 setQueryData(쿼리키, 변경할 데이터)
 			queryClient.setQueryData(['user', args.id], args);
 		},
 	});
